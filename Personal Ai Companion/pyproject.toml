@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "personal-ai-companion"
+version = "0.1.0"
+description = "Private, local-first personal AI companion with Claude-ready memory orchestration."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "OpenAI + local implementation" }]
+license = "MIT"
+dependencies = [
+  "anthropic>=0.30.0",
+  "fastapi>=0.111.0",
+  "uvicorn>=0.30.0"
+]
+
+[project.scripts]
+personal-ai-companion = "personal_ai_companion.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

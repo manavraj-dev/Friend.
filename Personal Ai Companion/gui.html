@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal AI Companion</title>
+    <style>
+      :root {
+        --bg: #090b10;
+        --bg-2: #111825;
+        --panel: rgba(17, 24, 39, 0.8);
+        --panel-strong: rgba(12, 18, 27, 0.95);
+        --line: rgba(148, 163, 184, 0.18);
+        --text: #e5eefb;
+        --muted: #94a3b8;
+        --accent: #8b5cf6;
+        --accent-2: #22d3ee;
+        --danger: #fb7185;
+        --shadow: 0 20px 60px rgba(15, 23, 42, 0.75);
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body {
+        margin: 0;
+        height: 100%;
+        font-family: Inter, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 32%),
+          radial-gradient(circle at bottom right, rgba(34, 211, 238, 0.12), transparent 30%),
+          linear-gradient(180deg, #06080c 0%, #0f172a 100%);
+        color: var(--text);
+      }
+
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 24px;
+      }
+
+      .shell {
+        width: min(1200px, 100%);
+        height: min(92vh, 900px);
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        border: 1px solid var(--line);
+        background: rgba(15, 23, 42, 0.72);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .sidebar {
+        background: linear-gradient(180deg, rgba(10, 14, 22, 0.88), rgba(15, 23, 42, 0.95));
+        border-right: 1px solid var(--line);
+        padding: 22px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .brand-mark {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        box-shadow: 0 0 24px rgba(139, 92, 246, 0.5);
+      }
+
+      .brand h1 {
+        margin: 0;
+        font-size: 1.1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #f8f8ff;
+      }
+
+      .status {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(15, 23, 42, 0.72);
+        padding: 14px 16px;
+      }
+
+      .status-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: var(--muted);
+      }
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+      }
+
+      .dot.offline {
+        background: #f59e0b;
+        box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+      }
+
+      .settings-box {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(10, 15, 23, 0.75);
+        padding: 12px;
+      }
+
+      .settings-box label {
+        display: block;
+        color: var(--muted);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .settings-box input,
+      .settings-box select {
+        width: 100%;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        border-radius: 10px;
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text);
+        padding: 10px 12px;
+        margin-bottom: 8px;
+      }
+
+      .memory-panel {
+        flex: 1;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: rgba(10, 15, 23, 0.75);
+        padding: 14px 12px;
+      }
+
+      .memory-panel h2 {
+        margin: 0 0 12px;
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .memory-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .memory-item {
+        border: 1px solid rgba(148, 163, 184, 0.12);
+        background: rgba(15, 23, 42, 0.7);
+        border-radius: 12px;
+        padding: 10px 12px;
+        color: var(--text);
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+
+      .main {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--line);
+        background: rgba(9, 12, 18, 0.72);
+      }
+
+      .topbar h2 {
+        margin: 0;
+        font-size: 1rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .signal {
+        font-size: 0.8rem;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .chat {
+        flex: 1;
+        overflow: auto;
+        padding: 24px 22px 10px;
+        background: rgba(6, 10, 17, 0.5);
+      }
+
+      .message {
+        max-width: 80%;
+        padding: 14px 16px;
+        border-radius: 18px;
+        margin-bottom: 14px;
+        line-height: 1.5;
+        border: 1px solid transparent;
+      }
+
+      .message.user {
+        margin-left: auto;
+        background: linear-gradient(135deg, rgba(91, 33, 182, 0.8), rgba(59, 130, 246, 0.7));
+      }
+
+      .message.assistant {
+        background: rgba(9, 20, 31, 0.9);
+        border-color: rgba(148, 163, 184, 0.12);
+      }
+
+      .composer {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        border-top: 1px solid var(--line);
+        padding: 18px 22px 22px;
+        background: rgba(9, 12, 18, 0.9);
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 56px;
+        max-height: 180px;
+        resize: vertical;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: rgba(15, 23, 42, 0.9);
+        color: var(--text);
+        padding: 14px 16px;
+        font-size: 0.98rem;
+        outline: none;
+      }
+
+      textarea:focus {
+        border-color: rgba(139, 92, 246, 0.8);
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+      }
+
+      button {
+        border: none;
+        border-radius: 16px;
+        padding: 15px 22px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: white;
+        background: linear-gradient(135deg, var(--accent), var(--accent-2));
+        cursor: pointer;
+        box-shadow: 0 12px 30px rgba(139, 92, 246, 0.35);
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      @media (max-width: 900px) {
+        .shell {
+          grid-template-columns: 1fr;
+          height: auto;
+        }
+
+        .sidebar {
+          border-right: none;
+          border-bottom: 1px solid var(--line);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark"></div>
+          <h1>Companion</h1>
+        </div>
+
+        <div class="status">
+          <div class="status-row">
+            <span id="modeLabel">Local mode</span>
+            <span id="modeDot" class="dot" aria-label="active"></span>
+          </div>
+          <div id="modeDescription" style="margin-top: 10px; font-size: 0.8rem; color: var(--muted);">
+            Private vault, active memory, no cloud handoff.
+          </div>
+        </div>
+
+        <div class="settings-box">
+          <label for="providerSelect">Provider</label>
+          <select id="providerSelect">
+            <option value="anthropic">Anthropic</option>
+            <option value="gemini">Gemini</option>
+          </select>
+
+          <label for="apiKeyInput">API key</label>
+          <input id="apiKeyInput" type="password" placeholder="Paste your API key" />
+          <button id="saveApiKeyButton" type="button">Save key</button>
+        </div>
+
+        <div class="memory-panel">
+          <h2>Memory</h2>
+          <div class="memory-list" id="memoryList">
+            <div class="memory-item">Working memory is active.</div>
+            <div class="memory-item">Vault is indexed locally.</div>
+            <div class="memory-item">Secrets stay physically separated.</div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <div class="topbar">
+          <h2>Deep personal interface</h2>
+          <div class="signal">Signal: active</div>
+        </div>
+
+        <div class="chat" id="chat"></div>
+
+        <form class="composer" id="composer">
+          <textarea id="messageInput" placeholder="Tell me what matters right now..." aria-label="Message input"></textarea>
+          <button type="submit" id="sendButton">Send</button>
+        </form>
+      </main>
+    </div>
+
+    <script>
+      const chatEl = document.getElementById('chat');
+      const form = document.getElementById('composer');
+      const input = document.getElementById('messageInput');
+      const sendButton = document.getElementById('sendButton');
+      const apiKeyInput = document.getElementById('apiKeyInput');
+      const providerSelect = document.getElementById('providerSelect');
+      const saveApiKeyButton = document.getElementById('saveApiKeyButton');
+      const modeLabel = document.getElementById('modeLabel');
+      const modeDot = document.getElementById('modeDot');
+      const modeDescription = document.getElementById('modeDescription');
+
+      function appendMessage(role, text) {
+        const el = document.createElement('div');
+        el.className = `message ${role}`;
+        el.textContent = text;
+        chatEl.appendChild(el);
+        chatEl.scrollTop = chatEl.scrollHeight;
+      }
+
+      function setBusy(isBusy) {
+        sendButton.disabled = isBusy;
+        input.disabled = isBusy;
+        sendButton.textContent = isBusy ? 'Thinking...' : 'Send';
+      }
+
+      function updateModeStatus(isEnabled) {
+        if (isEnabled) {
+          modeLabel.textContent = 'Claude enabled';
+          modeDot.classList.remove('offline');
+          modeDescription.textContent = 'Connected to your configured API key. Full model replies are active.';
+        } else {
+          modeLabel.textContent = 'Local fallback';
+          modeDot.classList.add('offline');
+          modeDescription.textContent = 'No API key configured yet. Add one in the sidebar to enable Claude.';
+        }
+      }
+
+      function loadStoredApiKey() {
+        const savedKey = localStorage.getItem('personal_ai_companion_api_key');
+        const savedProvider = localStorage.getItem('personal_ai_companion_provider') || 'anthropic';
+        providerSelect.value = savedProvider;
+        if (savedKey) {
+          apiKeyInput.value = savedKey;
+          updateModeStatus(true);
+        } else {
+          updateModeStatus(false);
+        }
+      }
+
+      function saveApiKey() {
+        const key = apiKeyInput.value.trim();
+        const provider = providerSelect.value;
+        if (!key) {
+          localStorage.removeItem('personal_ai_companion_api_key');
+          localStorage.setItem('personal_ai_companion_provider', provider);
+          updateModeStatus(false);
+          appendMessage('assistant', 'API key cleared. The app will use the local fallback until you add one again.');
+          return;
+        }
+        localStorage.setItem('personal_ai_companion_api_key', key);
+        localStorage.setItem('personal_ai_companion_provider', provider);
+        updateModeStatus(true);
+        appendMessage('assistant', `API key saved for this browser. Future messages will try ${provider === 'gemini' ? 'Gemini' : 'Anthropic'} with the key you entered.`);
+      }
+
+      saveApiKeyButton.addEventListener('click', saveApiKey);
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+
+        const apiKey = localStorage.getItem('personal_ai_companion_api_key') || '';
+        const provider = localStorage.getItem('personal_ai_companion_provider') || 'anthropic';
+
+        appendMessage('user', message);
+        input.value = '';
+        setBusy(true);
+
+        try {
+          const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, api_key: apiKey, provider })
+          });
+
+          if (!response.ok) {
+            throw new Error(`Request failed: ${response.status}`);
+          }
+
+          const payload = await response.json();
+          const reply = payload.reply || 'I am here.';
+          appendMessage('assistant', reply);
+
+          const memoryList = document.getElementById('memoryList');
+          if (payload.aggregate_data && Array.isArray(payload.aggregate_data.projects)) {
+            const names = payload.aggregate_data.projects.map((project) => project.name).slice(0, 3);
+            if (names.length) {
+              const item = document.createElement('div');
+              item.className = 'memory-item';
+              item.textContent = 'Projects: ' + names.join(', ');
+              memoryList.prepend(item);
+            }
+          }
+        } catch (error) {
+          appendMessage('assistant', 'The local companion is not available yet. Start the server with: personal-ai-companion serve --vault ./vault');
+        } finally {
+          setBusy(false);
+        }
+      });
+
+      loadStoredApiKey();
+      appendMessage('assistant', 'I am here. Tell me what matters most right now. Add an API key in the sidebar if you want Claude enabled.');
+    </script>
+  </body>
+</html>
